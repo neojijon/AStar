@@ -1,11 +1,3 @@
-//
-//  EaseWalkTo.cpp
-//  testAStar
-//
-//  Created by chenquanjun on 14-3-14.
-//
-//
-
 #include "EaseWalkTo.h"
 #include "TestSprite.h"
 
@@ -42,7 +34,6 @@ bool EaseWalkTo::initWithDuration(float duration, PointArray* pointArr)
 
 EaseWalkTo* EaseWalkTo::clone() const
 {
-	// no copy constructor
 	auto a = new EaseWalkTo();
 	a->initWithDuration(_duration, _pointArr->clone());
 	a->autorelease();
@@ -63,7 +54,7 @@ void EaseWalkTo::startWithTarget(Node *target)
     if (_target)
     {
         if (_pointArr->count() > 0) {
-            Point point = _pointArr->getControlPointAtIndex(0);
+            Vec2 point = _pointArr->getControlPointAtIndex(0);
             _target->setPosition(point);
         }
         
@@ -75,26 +66,24 @@ void EaseWalkTo::update(float time)
 {
     if (_target)
     {
-        //从0 到 1
         int count = _pointArr->count();
 
         float fIndex = count * time;
         int index = (int)fIndex;
 
         if (index < count) {
-            Point pointBegin = _pointArr->getControlPointAtIndex(index);
-            Point pointEnd = _pointArr->getControlPointAtIndex(index + 1);
+            Vec2 pointBegin = _pointArr->getControlPointAtIndex(index);
+            Vec2 pointEnd = _pointArr->getControlPointAtIndex(index + 1);
             float offset = fIndex - index;
 
             float x = pointBegin.x + (pointEnd.x - pointBegin.x) * offset;
             float y = pointBegin.y + (pointEnd.y - pointBegin.y) * offset;
-            _target->setPosition(Point(x, y));
+            _target->setPosition(Vec2(x, y));
             _nIndex = index;
             
             this->playActionByPos(pointBegin, pointEnd, _target);
         }else{
-            //最后一点
-            Point point = _pointArr->getControlPointAtIndex(index - 1);
+            Vec2 point = _pointArr->getControlPointAtIndex(index - 1);
             _target->setPosition(point);
 
             TestSprite *isTestSprite = dynamic_cast<TestSprite*>(_target);
@@ -106,7 +95,7 @@ void EaseWalkTo::update(float time)
     }    
 }
 
-void EaseWalkTo::playActionByPos(Point start, Point end, Node *target){
+void EaseWalkTo::playActionByPos(Vec2 start, Vec2 end, Node *target){
     float offsetX = end.x - start.x;
     float offsetY = end.y - start.y;
     PlayerActionType actionType = PlayerActionType::Invalid;

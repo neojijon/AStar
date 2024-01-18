@@ -1,11 +1,3 @@
-//
-//  MapInfo.cpp
-//  testTileMap
-//
-//  Created by chenquanjun on 14-3-12.
-//
-//
-
 #include "MapInfo.h"
 
 MapInfo::MapInfo(void){
@@ -14,7 +6,6 @@ MapInfo::MapInfo(void){
     
     m_nKeyOffset = 10000;
     
-    //随机种子
     srand((unsigned)time(NULL));
 }
 
@@ -24,28 +15,23 @@ MapInfo::~MapInfo(void){
 
 bool MapInfo::init(const std::string& filename){
     
-    //地图
     auto map = TMXTiledMap::create(filename);
     
-    //object图层
     auto objectGrp = map->getObjectGroup("object");
     
     auto layer = map->getLayer("background");
     
-    _mapGridSize = layer->getLayerSize();//地图大小
+    _mapGridSize = layer->getLayerSize();
     
-    //所有对象
     auto& objects = objectGrp->getObjects();
     
     int capacity = _mapGridSize.width * _mapGridSize.height;
     
     ValueMap& dict = objects.at(0).asValueMap();
-    _pointSize = Size(dict["width"].asFloat(), dict["height"].asFloat());//单元大小
+    _pointSize = Size(dict["width"].asFloat(), dict["height"].asFloat());
     
-    int mapType[capacity];//临时储存信息
+    int *mapType =  new int[capacity];
     
-    //tileMap 与 数据结构 转换
-    //PS:1、dict取出来是乱序的。2、从左下角开始
     for (auto& obj : objects) {
         ValueMap& dict = obj.asValueMap();
         
@@ -56,18 +42,16 @@ bool MapInfo::init(const std::string& filename){
         
         int mapId = x + y * _mapGridSize.width;
         
-        mapType[mapId] = objectId;//id对应类型
+        mapType[mapId] = objectId;
     }
     
-    //数组转化成vector保存
     for (int i = 0; i < capacity; i++) {
         int num = mapType[i];
         
-        //此处断言是因为tmx文件里面的object位置偏位导致不存在信息，从而为0
         CCASSERT(num != 0, "objectId not set");
         
         Value pNum = Value(num);
-        _mapInfoTypeVec.push_back(pNum); //vector保存
+        _mapInfoTypeVec.push_back(pNum); 
     }
     return true;
 }
@@ -91,10 +75,9 @@ MapPath* MapInfo::getMapPath(int startId, int endId){
     m_nStartIndex = startId;
     m_nEndIndex = endId;
     
-    MapPath* path = this->getPathFromCache();//从缓存寻找
+    MapPath* path = this->getPathFromCache();
     
     if (path == nullptr) {
-        //生成新的path
         path = this->findPath();
     }
     return path;
@@ -137,7 +120,7 @@ int MapInfo::getRandomMapIdByType(MapInfoType type){
         
         float r = CCRANDOM_0_1();
         
-        if (r == 1) // to prevent from accessing data-arr[data->num], out of range.
+        if (r == 1)         
         {
             r = 0;
         }
@@ -154,24 +137,20 @@ int MapInfo::getRandomMapIdByType(MapInfoType type){
     return mapId;
 }
 
-Point MapInfo::getRandomPointByType(MapInfoType type){
+Vec2 MapInfo::getRandomPointByType(MapInfoType type){
     int mapId = getRandomMapIdByType(type);
     return convertIdToPoint(mapId);
 }
 
-Point MapInfo::getRandomPointMidByType(MapInfoType type){
+Vec2 MapInfo::getRandomPointMidByType(MapInfoType type){
     int mapId = getRandomMapIdByType(type);
     return convertIdToPointMid(mapId);
 }
 
 #pragma -mark- Convert Method
 
-int MapInfo::convertPointToId(Point point){
+int MapInfo::convertPointToId(Vec2 point){
     int mapId = -1;
-    //在大地图内, 此处的转换是按照左下角往右扩展，然后再往上扩展形式计算，例如
-    // 8 9 ...
-    // 4 5 6 7
-    // 0 1 2 3
     if (Rect(0, 0, _mapGridSize.width * _pointSize.width, _mapGridSize.height * _pointSize.height).containsPoint(point)) {
         int x = point.x / _pointSize.width;
         int y = point.y / _pointSize.height;
@@ -180,21 +159,21 @@ int MapInfo::convertPointToId(Point point){
     return mapId;
 }
 
-Point MapInfo::convertIdToPoint(int mapId){
-    Point point = Point(0, 0);
+Vec2 MapInfo::convertIdToPoint(int mapId){
+    Vec2 point = Vec2(0, 0);
     
     if (mapId >= 0 && mapId < _mapInfoTypeVec.size()) {
-        int y = (mapId / (int)_mapGridSize.width); //y坐标
-        int x = (mapId - y * _mapGridSize.width) ; //x坐标
+        int y = (mapId / (int)_mapGridSize.width); 
+        int x = (mapId - y * _mapGridSize.width) ; 
         
-        point = Point(x  * _pointSize.width, y * _pointSize.height);
+        point = Vec2(x  * _pointSize.width, y * _pointSize.height);
     }
     return point;
 }
 
-Point MapInfo::convertIdToPointMid(int mapId){
-    Point point = convertIdToPoint(mapId);
-    return Point(point.x + _pointSize.width * 0.5f, point.y + _pointSize.height * 0.5f);
+Vec2 MapInfo::convertIdToPointMid(int mapId){
+    Vec2 point = convertIdToPoint(mapId);
+    return Vec2(point.x + _pointSize.width * 0.5f, point.y + _pointSize.height * 0.5f);
 }
 
 #pragma -mark- ------Private Method------
@@ -210,20 +189,18 @@ MapPath* MapInfo::findPath(){
         return nullptr;
     }
     
-    //如果目标在障碍列表里面返回空
-    auto &pointTypeStart = _mapInfoTypeVec.at(m_nStartIndex); //vector保存的地图信息
-    if (pointTypeStart.asInt() == (int)MapInfoType::Block)    // 障碍
+    auto &pointTypeStart = _mapInfoTypeVec.at(m_nStartIndex); 
+    if (pointTypeStart.asInt() == (int)MapInfoType::Block)     
     {
         return nullptr;
     }
     
-    auto &pointTypeEnd = _mapInfoTypeVec.at(m_nEndIndex); //vector保存的地图信息
-    if (pointTypeEnd.asInt() == (int)MapInfoType::Block)    // 障碍
+    auto &pointTypeEnd = _mapInfoTypeVec.at(m_nEndIndex); 
+    if (pointTypeEnd.asInt() == (int)MapInfoType::Block)     
     {
         return nullptr;
     }
     
-    // 先添加开始点
     PointNode* pNode = new PointNode;
     pNode->nIndex = m_nStartIndex;
     vecClose.push_back(pNode);
@@ -231,7 +208,6 @@ MapPath* MapInfo::findPath(){
     int nStep = 0;
     while(true)
     {
-        //注意网格数目较大的话需要修改此值，防止寻路路径失败
         if (nStep++ >= MAPINFO_MAX_STEP_NUM)
         {
             break;
@@ -239,14 +215,13 @@ MapPath* MapInfo::findPath(){
         PointNode* pNextNode = vecClose[vecClose.size() - 1];
         if (!pNextNode)
         {
-            break;//没有
+            break;
         }
         if (pNextNode->nIndex == m_nEndIndex)
         {
-            break;//目标
+            break;
         }
         
-        //改成8的话是8个方向，此处只使用4个方向
         for (int i = 0; i < MAPINFO_ASTAR_DIRECTION_NUM; i++)
         {
             int nIndex = GetIndexByDir(pNextNode->nIndex, i);
@@ -255,17 +230,17 @@ MapPath* MapInfo::findPath(){
                 continue;
             }
             
-            auto &pointType = _mapInfoTypeVec.at(nIndex); //vector保存的地图信息
-            if (pointType.asInt() == (int)MapInfoType::Block)    // 障碍
+            auto &pointType = _mapInfoTypeVec.at(nIndex); 
+            if (pointType.asInt() == (int)MapInfoType::Block)     
             {
                 continue;
             }
-            if (InTable(nIndex, vecClose) != nullptr)      // 在close表里
+            if (InTable(nIndex, vecClose) != nullptr)       
             {
                 continue;
             }
             
-            PointNode* pNode = InTable(nIndex, vecOpen);     // 在open表里
+            PointNode* pNode = InTable(nIndex, vecOpen);      
             if (pNode)
             {
                 int nNewG = pNextNode->nG + GetGByIndex(pNextNode->nIndex, pNode->nIndex);
@@ -277,7 +252,6 @@ MapPath* MapInfo::findPath(){
                 continue;
             }
             
-            // 新搜索到的格子
             pNode = new PointNode;
             pNode->nIndex = nIndex;
             pNode->nG = pNextNode->nG + GetGByIndex(pNextNode->nIndex, pNode->nIndex);
@@ -311,27 +285,24 @@ MapPath* MapInfo::findPath(){
         }
     }
     
-    // 寻路结束，找最优路径
     pNode = vecClose[vecClose.size() - 1];
     
-    PointArray *pathArr = PointArray::create(0);//创建传入的数字没有使用
+    PointArray *pathArr = PointArray::create(0);
  
-    //此处生成的是逆向的的array
     while (pNode)
     {
         
         int mapId = pNode->nIndex;
-        Point point = this->convertIdToPointMid(mapId);//map id 转换成 网格中点坐标
+        Vec2 point = this->convertIdToPointMid(mapId);   
         
         pathArr->addControlPoint(point);
         
-        pNode = pNode->pParent;//此处变成逆向
+        pNode = pNode->pParent;
     }
     
     
-    //逆向路径
     MapPath* pathRevert = MapPath::create(m_nEndIndex, m_nStartIndex , pathArr);
-    MapPath* path = pathRevert->getRevertPath(); //上面变成逆向
+    MapPath* path = pathRevert->getRevertPath(); 
     
     int keyRevert = m_nEndIndex * m_nKeyOffset + m_nStartIndex;
     int key = m_nStartIndex * m_nKeyOffset + m_nEndIndex;
@@ -339,15 +310,12 @@ MapPath* MapInfo::findPath(){
     int cacheSize = _mapPathCacheMap.size();
     
     if (cacheSize > MAPINFO_MAX_STORE_PATH_SIZE) {
-        _mapPathCacheMap.clear();//2W个大概占15M内存, 1W个6M多内存
-//        CCLOG("RELEASE");
+        _mapPathCacheMap.clear(); 
     }
     
-    //使用开始点x10000+结束点作为key值缓存字典
     _mapPathCacheMap.insert(key, path);
-    _mapPathCacheMap.insert(keyRevert, pathRevert);//反向缓存
+    _mapPathCacheMap.insert(keyRevert, pathRevert);
 
-    //此处需要释放
     do {
         for (std::vector<PointNode *>::iterator it = vecClose.begin(); it != vecClose.end(); it ++)
             if (NULL != *it)
@@ -399,33 +367,33 @@ int MapInfo::GetIndexByDir(int nIndex, int nDir)
     
     switch(nDir)
     {
-        case 0:     // 上
+        case 0:      
             nRow += 1;
             break;
-        case 1:     // 右
+        case 1:      
             nCol += 1;
             break;
-        case 2:     // 下
+        case 2:      
             nRow -= 1;
             break;
-        case 3:     // 左
+        case 3:      
             nCol -= 1;
             break;
-        case 4:     // 右上
+        case 4:      
             nRow += 1;
             nCol +=1;
             break;
-        case 5:     // 右下
+        case 5:      
             nRow -= 1;
             nCol += 1;
             break;
             
-        case 6:     // 左下
+        case 6:      
             nRow -= 1;
             nCol -= 1;
             break;
             
-        case 7:     // 左上
+        case 7:      
             nRow += 1;
             nCol -= 1;
             break;

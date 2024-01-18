@@ -10,7 +10,6 @@
 #define __testAStar__WalkTo__
 
 #include "cocos2d.h"
-#include "CCActionInterval.h"
 #include "MapGeneral.h"
 USING_NS_CC;
 

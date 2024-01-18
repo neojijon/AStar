@@ -14,7 +14,7 @@
 USING_NS_CC;
 
 //地图路径
-class MapPath : public Object{
+class MapPath : public Ref{
     
 public:
     

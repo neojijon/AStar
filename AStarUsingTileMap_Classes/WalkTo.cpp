@@ -62,7 +62,7 @@ void WalkTo::startWithTarget(Node *target)
     if (_target)
     {
         if (_pointArr->count() > 0) {
-            Point point = _pointArr->getControlPointAtIndex(_nIndex);
+            Vec2 point = _pointArr->getControlPointAtIndex(_nIndex);
             _target->setPosition(point);
         }
  
@@ -80,7 +80,7 @@ void WalkTo::update(float time)
             //小于是防止负数
             return;
         }
-        Point point = _pointArr->getControlPointAtIndex(index);
+        Vec2 point = _pointArr->getControlPointAtIndex(index);
         _target->setPosition(point);
         _nIndex = index;
 

@@ -1,11 +1,3 @@
-//
-//  TestSprite.cpp
-//  testAStar
-//
-//  Created by chenquanjun on 14-3-14.
-//
-//
-
 #include "TestSprite.h"
 
 
@@ -31,8 +23,6 @@ TestSprite* TestSprite::create(const std::string& fileNameFormat){
 bool TestSprite::init(const std::string& fileNameFormat){
     if (Sprite::init())
     {
-
-        //将纹理提前加入精灵帧缓存
         SpriteFrameCache *frameCache = SpriteFrameCache::getInstance();
         
         for (int j = 0; j < 4; j++) {
@@ -40,8 +30,8 @@ bool TestSprite::init(const std::string& fileNameFormat){
             
             for(int i = 0; i < 4; i++)
             {
-                __String * str = __String::createWithFormat(fileNameFormat.c_str(), j, i);
-                SpriteFrame *frame = frameCache->getSpriteFrameByName(str->getCString());
+                std::string str = StringUtils::format(fileNameFormat.c_str(), j, i);
+                SpriteFrame *frame = frameCache->getSpriteFrameByName(str);
                 
                 animFrames.pushBack(frame);
             }
@@ -50,15 +40,14 @@ bool TestSprite::init(const std::string& fileNameFormat){
             
             int actionTag = j + 1;
             
-            _playerAnimMap.insert(actionTag, animation);//使用map保存
+            _playerAnimMap.insert(actionTag, animation);
 
         }
         
-        //精灵
-        __String * fileStr = __String::createWithFormat(fileNameFormat.c_str(), 0, 0);
-        Sprite *animSprite = Sprite::createWithSpriteFrameName(fileStr->getCString());
+        std::string fileStr = StringUtils::format(fileNameFormat.c_str(), 0, 0);
+        Sprite *animSprite = Sprite::createWithSpriteFrameName(fileStr);
         
-        animSprite->setAnchorPoint(Point(0.5, 0));
+        animSprite->setAnchorPoint(Vec2(0.5, 0));
         
         this->addChild(animSprite);
         
@@ -74,10 +63,9 @@ bool TestSprite::init(const std::string& fileNameFormat){
 
 void TestSprite::playAction(PlayerActionType actionType){
     if (actionType == _lastActionType) {
-        return;//相同动作
+        return;
     }
     
-    //停止旧动作
     if (_lastActionType != PlayerActionType::Invalid) {
         _animSprite->stopActionByTag((int)_lastActionType);
     }
@@ -85,8 +73,6 @@ void TestSprite::playAction(PlayerActionType actionType){
     _lastActionType = actionType;
     Animation *animation = (Animation*)_playerAnimMap.at((int)actionType);
 
-    //map中存在key值
-    
     if (animation != nullptr) {
         Animate *anim = Animate::create(animation);
         RepeatForever *repeat = RepeatForever::create(anim);
