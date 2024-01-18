@@ -40,43 +40,17 @@ bool HelloWorld::init()
     frameCache->addSpriteFramesWithFile("player3.plist");
     frameCache->addSpriteFramesWithFile("player4.plist");
     
-    do {
-        for (int i = 0; i < 3; i++) {
-        
-            auto *testSprite1 = this->createTestSpriteWithFormat("player1_%i_%i.png");
-            
-            _mapLayer->addChild(testSprite1, 200);
-            
-            this->actionDone(testSprite1);
-        }
-        
-        for (int i = 0; i < 3; i++) {
-            
-            auto *testSprite1 = this->createTestSpriteWithFormat("player2_%i_%i.png");
-            
-            _mapLayer->addChild(testSprite1, 200);
-            
-            this->actionDone(testSprite1);
-        }
-        
-        for (int i = 0; i < 3; i++) {
-            
-            auto *testSprite1 = this->createTestSpriteWithFormat("player3_%i_%i.png");
-            
-            _mapLayer->addChild(testSprite1, 200);
-            
-            this->actionDone(testSprite1);
-        }
-        
-        for (int i = 0; i < 3; i++) {
-            
-            auto *testSprite1 = this->createTestSpriteWithFormat("player4_%i_%i.png");
-            
-            _mapLayer->addChild(testSprite1, 200);
-            
-            this->actionDone(testSprite1);
-        }
-    } while (0);
+    /*for (int i = 1; i <= 4; i++) {
+        for (int j = 0; j <= 3; j++) {        
+            for (int k = 0; k <= 3; k++) {
+                auto* testSprite1 = this->createTestSpriteWithFormat(StringUtils::format("player%d_%d_%d.png", i, j, k));
+
+                _mapLayer->addChild(testSprite1, 200);
+
+                this->actionDone(testSprite1);
+            }
+        }        
+    } */
 
     this->setTouchEvent();
 
@@ -84,17 +58,29 @@ bool HelloWorld::init()
 }
 
 void HelloWorld::setTouchEvent(){
-    auto *testSprite = this->createTestSpriteWithFormat("player1_%i_%i.png");
+    //TestSprite* testSprite = this->createTestSpriteWithFormat("player1_%i_%i.png");
+
+   //for (int i = 1; i <= 4; i++) {
+  /*      for (int j = 0; j <= 3; j++) {
+            for (int k = 0; k <= 3; k++) {
+                testSprite = this->createTestSpriteWithFormat(StringUtils::format("player%d_%d_%d.png", 1, j, k));
+
+                _mapLayer->addChild(testSprite, 200);
+
+                this->actionDone(testSprite);
+            }
+        }*/
+    //} 
     
-    testSprite->runAction(RepeatForever::create(Blink::create(0.5, 3)));
+    //testSprite->runAction(RepeatForever::create(Blink::create(0.5, 3)));
     
     Size winSize = Director::getInstance()->getWinSize();
     
-    _mapLayer->addChild(testSprite, 200);
+    //_mapLayer->addChild(testSprite, 200);
     
-    Vec2 mapPosition = Vec2(winSize.width * 0.5f - testSprite->getPosition().x , winSize.height * 0.5f - testSprite->getPosition().y);
+    //Vec2 mapPosition = Vec2(winSize.width * 0.5f - testSprite->getPosition().x , winSize.height * 0.5f - testSprite->getPosition().y);
     
-    _mapLayer->setPosition(mapPosition);
+    //_mapLayer->setPosition(mapPosition);
     this->adjustMapLayer(false);
     
     auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -134,7 +120,7 @@ void HelloWorld::setTouchEvent(){
         auto touchPoint = _mapLayer->convertToNodeSpace(touch->getLocation()); ;
         
         if (!_bIsMove) {
-            auto mapId = this->_mapInfo->convertPointToId(touchPoint);
+         /*   auto mapId = this->_mapInfo->convertPointToId(touchPoint);
             
             auto position = testSprite->getPosition();
             auto originId = _mapInfo->convertPointToId(position);
@@ -152,7 +138,7 @@ void HelloWorld::setTouchEvent(){
                 testSprite->stopActionByTag(99);
                 testSprite->runAction(easeWalkTo1);
                 
-            }
+            }*/
         }else{
             
         }
@@ -168,7 +154,7 @@ void HelloWorld::setTouchEvent(){
 TestSprite* HelloWorld::createTestSpriteWithFormat(std::string fileName){
     auto startPoint = _mapInfo->getRandomPointMidByType(MapInfoType::Road);
     
-    auto *testSprite = TestSprite::create(fileName.c_str());
+    auto *testSprite = TestSprite::create(fileName);
     
     testSprite->setPosition(startPoint);
     

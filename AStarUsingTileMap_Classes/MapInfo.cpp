@@ -30,7 +30,7 @@ bool MapInfo::init(const std::string& filename){
     ValueMap& dict = objects.at(0).asValueMap();
     _pointSize = Size(dict["width"].asFloat(), dict["height"].asFloat());
     
-    int *mapType =  new int[capacity];
+    int *mapType = new int[capacity];
     
     for (auto& obj : objects) {
         ValueMap& dict = obj.asValueMap();

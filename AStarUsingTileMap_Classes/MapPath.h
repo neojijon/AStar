@@ -1,11 +1,3 @@
-//
-//  MapPath.h
-//  testTileMap
-//
-//  Created by chenquanjun on 14-3-13.
-//
-//
-
 #ifndef __testTileMap__MapPath__
 #define __testTileMap__MapPath__
 
@@ -13,17 +5,15 @@
 #include "MapGeneral.h"
 USING_NS_CC;
 
-//地图路径
-class MapPath : public Ref{
+class MapPath : public Node{
     
 public:
     
-    //开始id，结束id，路径点
     static MapPath* create(int startId, int endId, PointArray* pointArr);
     
-    MapPath* getRevertPath(void);//相反路径
+    MapPath* getRevertPath(void);
     
-    MapPath* getCopy();//复制备份
+    MapPath* getCopy();
     
 private:
     MapPath(void);
@@ -38,4 +28,4 @@ private:
     CC_SYNTHESIZE_RETAIN(PointArray*, _pointArr, PointArr)
 };
 
-#endif /* defined(__testTileMap__MapPath__) */
+#endif   
