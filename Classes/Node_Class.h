@@ -11,9 +11,11 @@ Made by Samvid
 #include "Location_Node_Class.h"
 #include "queue"
 
-#define IDIM 27
-#define JDIM 20
+#define IDIM 9
+#define JDIM 7
 #define NDIR 4
+
+#define BLOCKSIZE 100
 
 USING_NS_CC;
 using namespace std;

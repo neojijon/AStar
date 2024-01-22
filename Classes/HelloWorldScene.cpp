@@ -32,34 +32,22 @@ bool HelloWorld::init()
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto map = TMXTiledMap::create("TiledMap/map.tmx");
-	addChild(map, 0, 1);
-
-	auto ms = map->getMapSize();
-	auto ts = map->getTileSize();
-	CCLOG("getMapSize: %f, %f", ms.width, ms.height);
-	CCLOG("getTileSize: %f, %f", ts.width, ts.height);
-
-	Size CC_UNUSED s = map->getContentSize();
-	CCLOG("ContentSize: %f, %f", s.width, s.height);
-
-
 	label = Label::createWithTTF("Path not found", "fonts/Marker Felt.ttf", 24);
 	this->addChild(label, 2);
 	label->setVisible(false);
 
 
-	//this->_touchEnabled = true;
-	//this->_touchMode = Touch::DispatchMode::ONE_BY_ONE;	
+	this->_touchEnabled = true;
+	this->_touchMode = Touch::DispatchMode::ONE_BY_ONE;	
 	
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan, this);
 	//touchListener->onTouchEnded = CC_CALLBACK_2(HelloWorld::onTouchEnded, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-	/*background=Sprite::create("Grid.png");
+	background=Sprite::create("Grid.png");
 	background->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-	this->addChild(background,0);*/
+	this->addChild(background,0);
 
 	checker = true;
 	obstacle_selector=true;
@@ -82,8 +70,8 @@ bool HelloWorld::onTouchBegan(cocos2d::Touch *stouch,cocos2d::Event *sevent)
 	if(obstacle_selector==true)
 	{
 		location_obstacle = stouch->getLocation();
-		i3 = (location_obstacle.x/32) + 1;
-		j3 = (location_obstacle.y/32) + 1;
+		i3 = (location_obstacle.x/ BLOCKSIZE) + 1;
+		j3 = (location_obstacle.y/ BLOCKSIZE) + 1;
 		if(noder->squares[i3][j3]==0)
 		{
 			createobstacleImage(i3,j3);
@@ -101,16 +89,16 @@ bool HelloWorld::onTouchBegan(cocos2d::Touch *stouch,cocos2d::Event *sevent)
 		if(i==1)
 		{
 			location_start = stouch->getLocation();
-			i1= (location_start.x/32) + 1;
-			j1= (location_start.y/32) + 1;
+			i1= (location_start.x/ BLOCKSIZE) + 1;
+			j1= (location_start.y/ BLOCKSIZE) + 1;
 			createstartImage(i1,j1);
 		}
 
 		if(i==2)
 		{
 			location_end = stouch->getLocation();
-			i2= (location_end.x/32) + 1;
-			j2= (location_end.y/32) + 1;
+			i2= (location_end.x/ BLOCKSIZE) + 1;
+			j2= (location_end.y/ BLOCKSIZE) + 1;
 			CCLOG("This is istrat = %d and jstart = %d and iend = %d and jend = %d ",i1,j1,i2,j2);
 			if(checker == true)
 			{
@@ -126,8 +114,8 @@ bool HelloWorld::onTouchBegan(cocos2d::Touch *stouch,cocos2d::Event *sevent)
 		if(i >= 3)
 		{
 			location_end = stouch->getLocation();
-			i2= (location_end.x/32) + 1;
-			j2= (location_end.y/32) + 1;
+			i2= (location_end.x/ BLOCKSIZE) + 1;
+			j2= (location_end.y/ BLOCKSIZE) + 1;
 			if(checker == true)
 			{
 
@@ -148,14 +136,14 @@ bool HelloWorld::onTouchBegan(cocos2d::Touch *stouch,cocos2d::Event *sevent)
 void HelloWorld::createstartImage(int istart,int jstart)
 {
 	box=Sprite::create("My_box.png");
-	box->setPosition(Vec2((istart*32)-50,(jstart* 32)-50));
+	box->setPosition(Vec2((istart* BLOCKSIZE)-50,(jstart* BLOCKSIZE)-50));
 	this->addChild(box,1);
 }
 
 void HelloWorld::createobstacleImage(int i3,int j3)
 {
 	obstacle1=Sprite::create("My_Obstacle.png");
-	obstacle1->setPosition(Vec2((i3* 32)-50,(j3* 32)-50));
+	obstacle1->setPosition(Vec2((i3* BLOCKSIZE)-50,(j3* BLOCKSIZE)-50));
 	this->addChild(obstacle1,1);
 }
 
@@ -172,10 +160,10 @@ bool HelloWorld::workingallaone(int istart,int jstart,int iend,int jend)
 	#define NUMOFACTIONS 20
 	actions = new Vector<FiniteTimeAction*>(NUMOFACTIONS);
 
-	auto action0 = MoveBy::create(0.5,Vec2(32,0));
-	auto action1 = MoveBy::create(0.5,Vec2(0, 32));
-	auto action2 = MoveBy::create(0.5,Vec2(-32,0));
-	auto action3 = MoveBy::create(0.5,Vec2(0,-32));
+	auto action0 = MoveBy::create(0.5,Vec2(BLOCKSIZE,0));
+	auto action1 = MoveBy::create(0.5,Vec2(0, BLOCKSIZE));
+	auto action2 = MoveBy::create(0.5,Vec2(-BLOCKSIZE,0));
+	auto action3 = MoveBy::create(0.5,Vec2(0,-BLOCKSIZE));
 	auto callback = CallFuncN::create(CC_CALLBACK_0(HelloWorld::something, this));
 
 	if(path1 == "")
