@@ -25,12 +25,14 @@ bool MapInfo::init(const std::string& filename){
     
     auto& objects = objectGrp->getObjects();
     
-    int capacity = _mapGridSize.width * _mapGridSize.height;
+    const int capacity = _mapGridSize.width * _mapGridSize.height;
     
     ValueMap& dict = objects.at(0).asValueMap();
     _pointSize = Size(dict["width"].asFloat(), dict["height"].asFloat());
     
-    int *mapType = new int[capacity];
+    _mapInfoTypeVec.clear();
+           
+    std::vector<int> mapType(capacity);
     
     for (auto& obj : objects) {
         ValueMap& dict = obj.asValueMap();
@@ -46,7 +48,8 @@ bool MapInfo::init(const std::string& filename){
     }
     
     for (int i = 0; i < capacity; i++) {
-        int num = mapType[i];
+
+        int num = mapType[i];                  
         
         CCASSERT(num != 0, "objectId not set");
         
@@ -80,6 +83,11 @@ MapPath* MapInfo::getMapPath(int startId, int endId){
     if (path == nullptr) {
         path = this->findPath();
     }
+
+    if (!path) {
+        CCLOG("Error: Path not found!");
+    }
+
     return path;
 }
 
@@ -90,6 +98,10 @@ PointArray* MapInfo::getPointPath(int startId, int endId){
 ValueVector MapInfo::getMapInfoTypeVec(MapInfoType type){
     
     int typeNum = (int)type;
+
+    if (_mapInfoTypeMap.find(typeNum) == _mapInfoTypeMap.end()) {
+        _mapInfoTypeMap[typeNum] = ValueVector();
+    }
 
     ValueVector typeVec = _mapInfoTypeMap[typeNum].asValueVector();
 

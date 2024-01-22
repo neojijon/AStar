@@ -24,7 +24,7 @@ bool HelloWorld::init()
     this->addChild(_mapLayer);
     
 
-    auto tmxFileName = "map3.tmx";
+    auto tmxFileName = "map1.tmx";
     
     TMXTiledMap* pMap = TMXTiledMap::create(tmxFileName);
     _mapLayer->addChild(pMap);
@@ -40,47 +40,61 @@ bool HelloWorld::init()
     frameCache->addSpriteFramesWithFile("player3.plist");
     frameCache->addSpriteFramesWithFile("player4.plist");
     
-    /*for (int i = 1; i <= 4; i++) {
-        for (int j = 0; j <= 3; j++) {        
-            for (int k = 0; k <= 3; k++) {
-                auto* testSprite1 = this->createTestSpriteWithFormat(StringUtils::format("player%d_%d_%d.png", i, j, k));
-
-                _mapLayer->addChild(testSprite1, 200);
-
-                this->actionDone(testSprite1);
-            }
-        }        
-    } */
+    do {
+        for (int i = 0; i < 3; i++) {
+        
+            auto *testSprite1 = this->createTestSpriteWithFormat("player1_%i_%i.png");
+            
+            _mapLayer->addChild(testSprite1, 200);
+            
+            this->actionDone(testSprite1);
+        }
+        
+        for (int i = 0; i < 3; i++) {
+            
+            auto *testSprite1 = this->createTestSpriteWithFormat("player2_%i_%i.png");
+            
+            _mapLayer->addChild(testSprite1, 200);
+            
+            this->actionDone(testSprite1);
+        }
+        
+        for (int i = 0; i < 3; i++) {
+            
+            auto *testSprite1 = this->createTestSpriteWithFormat("player3_%i_%i.png");
+            
+            _mapLayer->addChild(testSprite1, 200);
+            
+            this->actionDone(testSprite1);
+        }
+        
+        for (int i = 0; i < 3; i++) {
+            
+            auto *testSprite1 = this->createTestSpriteWithFormat("player4_%i_%i.png");
+            
+            _mapLayer->addChild(testSprite1, 200);
+            
+            this->actionDone(testSprite1);
+        }
+    } while (0);
 
     this->setTouchEvent();
 
     return true;
 }
 
-void HelloWorld::setTouchEvent(){
-    //TestSprite* testSprite = this->createTestSpriteWithFormat("player1_%i_%i.png");
-
-   //for (int i = 1; i <= 4; i++) {
-  /*      for (int j = 0; j <= 3; j++) {
-            for (int k = 0; k <= 3; k++) {
-                testSprite = this->createTestSpriteWithFormat(StringUtils::format("player%d_%d_%d.png", 1, j, k));
-
-                _mapLayer->addChild(testSprite, 200);
-
-                this->actionDone(testSprite);
-            }
-        }*/
-    //} 
+void HelloWorld::setTouchEvent(){    
+    auto *testSprite = this->createTestSpriteWithFormat("player1_%i_%i.png");
     
-    //testSprite->runAction(RepeatForever::create(Blink::create(0.5, 3)));
+    testSprite->runAction(RepeatForever::create(Blink::create(0.5, 3)));
     
     Size winSize = Director::getInstance()->getWinSize();
     
-    //_mapLayer->addChild(testSprite, 200);
+    _mapLayer->addChild(testSprite, 200);
     
-    //Vec2 mapPosition = Vec2(winSize.width * 0.5f - testSprite->getPosition().x , winSize.height * 0.5f - testSprite->getPosition().y);
+    Vec2 mapPosition = Vec2(winSize.width * 0.5f - testSprite->getPosition().x , winSize.height * 0.5f - testSprite->getPosition().y);
     
-    //_mapLayer->setPosition(mapPosition);
+    _mapLayer->setPosition(mapPosition);
     this->adjustMapLayer(false);
     
     auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -89,8 +103,7 @@ void HelloWorld::setTouchEvent(){
     myListener->setSwallowTouches(true);
     
     myListener->onTouchBegan = [=](Touch* touch,Event* event)
-    {
-        
+    {        
         _bIsMove = false;
         return true;
     };
@@ -120,7 +133,7 @@ void HelloWorld::setTouchEvent(){
         auto touchPoint = _mapLayer->convertToNodeSpace(touch->getLocation()); ;
         
         if (!_bIsMove) {
-         /*   auto mapId = this->_mapInfo->convertPointToId(touchPoint);
+            auto mapId = this->_mapInfo->convertPointToId(touchPoint);
             
             auto position = testSprite->getPosition();
             auto originId = _mapInfo->convertPointToId(position);
@@ -138,7 +151,7 @@ void HelloWorld::setTouchEvent(){
                 testSprite->stopActionByTag(99);
                 testSprite->runAction(easeWalkTo1);
                 
-            }*/
+            }
         }else{
             
         }
@@ -201,11 +214,24 @@ void HelloWorld::adjustMapLayer(bool isAnim){
 }
 
 void HelloWorld::actionDone(Node *pSender){
+
+    if (!_mapInfo) {
+        CCLOG("Error: MapInfo is nullptr!");
+        return;
+    }
+
     int newTarget = _mapInfo->getRandomMapIdByType(MapInfoType::Road);
     
     int oldTarget = _mapInfo->convertPointToId(pSender->getPosition());
     
+    if (oldTarget == newTarget) return;
+
     MapPath* pMathPath = _mapInfo->getMapPath(oldTarget, newTarget);
+
+    if (!pMathPath) {
+        CCLOG("Error: MathPath is nullptr!");
+        return;
+    }
     
     PointArray *pointArr = pMathPath->getPointArr();
     
