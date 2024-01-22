@@ -7,6 +7,10 @@ https://github.com/Samvid95/A-star-Algorithm
 https://github.com/ty0x2333/A-star
 
 참고로 만듦
+
+Classes 폴더에 있는 소스코드는 Resources에 있는 리소스를 이용해서 A-star-Algorithm 코드를 이용해서 구현함.
+
+
 Cocos2dx-AStarUsingTileMap 코드 이용
 AStarUsingTileMap_Classes 폴더에 있는 소스로 cocos2d-x 4.0으로 수정함.
 
